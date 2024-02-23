@@ -2,12 +2,12 @@
 #include "raylib.h"
 
 #define TITLE "Krow"
-#define WIDTH 1200
-#define HEIGHT 800
+#define WIDTH      1200
+#define HEIGHT     800
 
 #define FONT GetFontDefault()
-#define FONT_SIZE 40
-#define SPACING 33
+#define FONT_SIZE  40
+#define SPACING    33
 
 #define KROWGRAY   CLITERAL(Color){ 35, 35, 35, 86 }
 
@@ -18,21 +18,21 @@
 #define FULLSCREEN 300
 #define TAB        258
 
-static void DrawBuffer(int* buf, int len);
-static int GetLineLength(int* buf);
+#define CURSOR     124
 
-int main(void)
-{
-    int width = 0;
+static void DrawBuffer(int* buf, int len);
+static void DrawCursor(int* buf, int x, int y);
+
+int main(void) {
+    int buffer[1024000];
     int posX = 0;
     int posY = 0;
     int len = 0;
+
     InitWindow(WIDTH, HEIGHT, TITLE);
-    Font f = GetFontDefault();
     ClearBackground(KROWGRAY);
-    int buffer[1024000];
-    while (!WindowShouldClose())
-    {
+
+    while (!WindowShouldClose()) {
         EnableEventWaiting();
         BeginDrawing();
 
@@ -42,28 +42,20 @@ int main(void)
 
         if(charKey >= 32 && charKey <= 255) {
             Vector2 pos = { posX, posY };
-            DrawTextCodepoint(f, charKey, pos, FONT_SIZE, PURPLE);
             posX += SPACING;
             buffer[len] = charKey;
-            width++;
             len++;
         } else {
             switch (charKey) {
             case BACKSPACE:
                 if(posX > 0) {
-                    ClearBackground(KROWGRAY);
                     len--;
-                    DrawBuffer(buffer, len);
                     posX -= SPACING;
                 } else if(posX == 0 && posY >= FONT_SIZE) {
-                    ClearBackground(KROWGRAY);
                     len--;
-                    DrawBuffer(buffer, len);
                     posY -= FONT_SIZE;
-                    // posX = amount between the last two newLines, or if its the first line,
-                    // 0 -> first newLine
-                    // len should be set according to the new posX
-                    // this way we can delete things in previous lines
+                    posX = len * SPACING;
+                    int idx = 0;
                 }
                 break;
             case ENTER:
@@ -72,9 +64,20 @@ int main(void)
                 buffer[len] = '\r';
                 len++;
                 break;
+            case FULLSCREEN:
+                SetWindowSize(1920, 1080);
+                    
+    int i = 0;
+    while(i < len)
+    {
+        fprintf(stderr, "%c", buffer[i]);
+        i++;
+    }
+                break;
             }
         }
 
+        DrawBuffer(buffer, len);
         EndDrawing();
     }
 
@@ -83,7 +86,8 @@ int main(void)
     return 0;
 }
 
-void DrawBuffer(int* buf, int len) {
+static void DrawBuffer(int* buf, int len) {
+    ClearBackground(KROWGRAY);
     Vector2 pos = { 0, 0 };
     for(int i = 0; i < len; ++i) {
         if(buf[i] >= 32 && buf[i] <= 255 && buf[i] != '\n') {
@@ -95,8 +99,9 @@ void DrawBuffer(int* buf, int len) {
             pos.y += FONT_SIZE;
         }
     }
+    DrawCursor(buf, pos.x, pos.y);
 }
 
-int GetLineLength(int* buf) {
-    return 0;
+static void DrawCursor(int* buf, int x, int y) {
+       DrawTextCodepoint(FONT, CURSOR, (Vector2){ x, y }, FONT_SIZE, PURPLE); 
 }
