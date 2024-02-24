@@ -36,7 +36,7 @@ int main(void) {
         EnableEventWaiting();
         BeginDrawing();
 
-        int charKey = GetKeyPressed();
+        int charKey = GetCharPressed();
 
         if(charKey != 0) printf("|%d| ", charKey);
 
@@ -45,35 +45,28 @@ int main(void) {
             posX += SPACING;
             buffer[len] = charKey;
             len++;
-        } else {
-            switch (charKey) {
-            case BACKSPACE:
-                if(posX > 0) {
-                    len--;
-                    posX -= SPACING;
-                } else if(posX == 0 && posY >= FONT_SIZE) {
-                    len--;
-                    posY -= FONT_SIZE;
-                    posX = len * SPACING;
-                    int idx = 0;
-                }
-                break;
-            case ENTER:
-                posX = 0;
-                posY += FONT_SIZE;
-                buffer[len] = '\r';
-                len++;
-                break;
-            case FULLSCREEN:
+        } else if(IsKeyPressed(BACKSPACE)) {
+            if(posX > 0) {
+                len--;
+                posX -= SPACING;
+            } else if(posX == 0 && posY >= FONT_SIZE) {
+                len--;
+                posY -= FONT_SIZE;
+                posX = len * SPACING;
+                int idx = 0;
+            }
+        } else if(IsKeyPressed(ENTER)) {
+            posX = 0;
+            posY += FONT_SIZE;
+            buffer[len] = '\r';
+            len++;
+        } else if(IsKeyPressed(FULLSCREEN)) {
+            Vector2 pos = GetWindowPosition();
+            if(pos.x == 0 && pos.y == 0)
+                SetWindowSize(WIDTH, HEIGHT);
+            else {
                 SetWindowSize(1920, 1080);
-                    
-    int i = 0;
-    while(i < len)
-    {
-        fprintf(stderr, "%c", buffer[i]);
-        i++;
-    }
-                break;
+                SetWindowPosition(0, 0);
             }
         }
 
@@ -103,5 +96,5 @@ static void DrawBuffer(int* buf, int len) {
 }
 
 static void DrawCursor(int* buf, int x, int y) {
-       DrawTextCodepoint(FONT, CURSOR, (Vector2){ x, y }, FONT_SIZE, PURPLE); 
+    DrawTextCodepoint(FONT, CURSOR, (Vector2){ x, y }, FONT_SIZE, PURPLE); 
 }
