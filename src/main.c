@@ -2,46 +2,74 @@
 #include "raylib.h"
 
 #define TITLE "Krow"
-#define WIDTH      1200
-#define HEIGHT     800
+#define WIDTH       1200
+#define HEIGHT      800
 
-#define FONT GetFontDefault()
-#define FONT_SIZE  40
-#define SPACING    33
+#define FONT        GetFontDefault()
+#define FONT_SIZE   40
+#define SPACING     33
 
-#define KROWGRAY   CLITERAL(Color){ 35, 35, 35, 86 }
+#define KROWGRAY    CLITERAL(Color){ 35, 35, 35, 86 }
 
-#define SHIFT      340
-#define BACKSPACE  259
-#define SPACE      320
-#define ENTER      257
-#define FULLSCREEN 300
-#define TAB        258
+#define SHIFT       340
+#define BACKSPACE   259
+#define SPACE       320
+#define ENTER       257
+#define FULLSCREEN  300
+#define TAB         258
 
-#define CURSOR     124
+#define RIGHT_ARROW 262
+#define LEFT_ARROW  263
+#define DOWN_ARROW  264
+#define UP_ARROW    265
 
-static void DrawBuffer(int* buf, int len);
+#define CURSOR      124
+
+static void DrawBuffer(int* buf, int len, int startX, int startY);
 static void DrawCursor(int* buf, int x, int y);
 
 int main(void) {
+    // On each key press, we will insert the char (if it is in range defined below)
+    // into our buffer to be printed each frame.
     int buffer[1024000];
+    int len = 0;
+
+    // posX and posY keep track of the cursor locally.
+    // This stops us from deleting characters from an empty line.
     int posX = 0;
     int posY = 0;
-    int len = 0;
+
+    // startX and startY define from which coordinate we should begin printing the text buffer.
+    // They are only affected by our scroll logic.
+    int startX = 0;
+    int startY = 0;
 
     InitWindow(WIDTH, HEIGHT, TITLE);
     ClearBackground(KROWGRAY);
 
     while (!WindowShouldClose()) {
-        EnableEventWaiting();
         BeginDrawing();
 
         int charKey = GetCharPressed();
+        int controlKey = GetKeyPressed();
+        Vector2 scroll = GetMouseWheelMoveV();
 
-        if(charKey != 0) printf("|%d| ", charKey);
+        // Controls window scrolling
+        if(scroll.x > 0)
+            startX -= SPACING;
+        else if(scroll.x < 0)
+            startX += SPACING;
+        else if(scroll.y > 0)
+            startY -= FONT_SIZE;
+        else if(scroll.y < 0)
+            startY += FONT_SIZE;
 
+        // Don't allow scrolling past 0,0 (Nothing can go there)
+        if(startX > 0) startX = 0;
+        if(startY > 0) startY = 0;
+
+        // Printable ASCII range
         if(charKey >= 32 && charKey <= 255) {
-            Vector2 pos = { posX, posY };
             posX += SPACING;
             buffer[len] = charKey;
             len++;
@@ -64,13 +92,11 @@ int main(void) {
             Vector2 pos = GetWindowPosition();
             if(pos.x == 0 && pos.y == 0)
                 SetWindowSize(WIDTH, HEIGHT);
-            else {
-                SetWindowSize(1920, 1080);
-                SetWindowPosition(0, 0);
-            }
+            else 
+                ToggleFullscreen();
         }
 
-        DrawBuffer(buffer, len);
+        DrawBuffer(buffer, len, startX, startY);
         EndDrawing();
     }
 
@@ -79,22 +105,25 @@ int main(void) {
     return 0;
 }
 
-static void DrawBuffer(int* buf, int len) {
+// Clears the background, then begins drawing from our startX and startY coordinates
+static void DrawBuffer(int* buf, int len, int startX, int startY) {
     ClearBackground(KROWGRAY);
-    Vector2 pos = { 0, 0 };
+    Vector2 pos = { startX, startY };
     for(int i = 0; i < len; ++i) {
         if(buf[i] >= 32 && buf[i] <= 255 && buf[i] != '\n') {
-            DrawTextCodepoint(FONT, buf[i], pos, FONT_SIZE, PURPLE);
+            DrawTextCodepoint(FONT, buf[i], pos, FONT_SIZE, WHITE);
             pos.x += SPACING;
         }
         else if(buf[i] == '\r') {
-            pos.x = 0;
+            pos.x = startX;
             pos.y += FONT_SIZE;
         }
     }
+
     DrawCursor(buf, pos.x, pos.y);
 }
 
+// Draws a pipe character right where the next character should be printed
 static void DrawCursor(int* buf, int x, int y) {
-    DrawTextCodepoint(FONT, CURSOR, (Vector2){ x, y }, FONT_SIZE, PURPLE); 
+    DrawTextCodepoint(FONT, CURSOR, (Vector2){ x, y }, FONT_SIZE, WHITE); 
 }
