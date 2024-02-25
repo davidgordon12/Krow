@@ -1,7 +1,7 @@
 # Krow
 A graphical text-editor built on Raylib (OpenGL)
 
-<img "krow.png" />
+<img src="krow.png" />
 
 ## Build
 This project relies on Raylib. You can get it <a href="https://github.com/raysan5/raylib">here</a.>.
