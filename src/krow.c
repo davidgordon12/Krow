@@ -7,6 +7,8 @@
 #define WIDTH       1200
 #define HEIGHT      800
 
+#define FILE_MAX    1024000
+
 #define FONT        GetFontDefault()
 #define FONT_SIZE   40
 #define SPACING     33
@@ -34,7 +36,7 @@ static void DrawCursor(char* buf, int x, int y);
 void OpenFile(const char* path) {
     // On each key press, we will insert the char (if it is in range defined below)
     // into our buffer to be printed each frame.
-    char buffer[1024000];
+    char buffer[FILE_MAX];
     int len = LoadBuffer(path, buffer);
 
     // posX and posY keep track of the cursor locally.
@@ -101,7 +103,6 @@ void OpenFile(const char* path) {
                 ToggleFullscreen();
         }
 
-        fprintf(stderr, "%s\n", buffer);
         DrawBuffer(buffer, len, startX, startY);
         EndDrawing();
     }
