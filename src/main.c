@@ -7,7 +7,7 @@
 
 int main(int argc, char** argv) {
     if(argc == 1) {
-        OpenFile("");
+        OpenFile("", "");
     }
     else if(argc == 2) {
         char buffer[FILE_MAX];
@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
         fread(fileBuffer, sizeof(char), fileSize, file);
 
 
-        OpenFile(fileBuffer);
+        OpenFile(filePath, fileBuffer);
     } else {
         fprintf(stderr, "Please provide a file path");
         return 0;

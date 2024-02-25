@@ -21,6 +21,7 @@
 #define ENTER       257
 #define FULLSCREEN  300
 #define TAB         258
+#define F5          294
 
 #define RIGHT_ARROW 262
 #define LEFT_ARROW  263
@@ -29,15 +30,17 @@
 
 #define CURSOR      124
 
-static int LoadBuffer(const char* path, char* buf);
+static int LoadBuffer(char* buf, char* fileBuffer);
 static void DrawBuffer(char* buf, int len, int startX, int startY);
 static void DrawCursor(char* buf, int x, int y);
 
-void OpenFile(const char* path) {
+void OpenFile(const char* path, char* fileBuffer) {
+    fprintf(stderr, "%s", path);
     // On each key press, we will insert the char (if it is in range defined below)
     // into our buffer to be printed each frame.
     char buffer[FILE_MAX];
-    int len = LoadBuffer(path, buffer);
+
+    int len = LoadBuffer(buffer, fileBuffer);
 
     // posX and posY keep track of the cursor locally.
     // This stops us from deleting characters from an empty line.
@@ -53,6 +56,7 @@ void OpenFile(const char* path) {
     ClearBackground(KROWGRAY);
 
     while (!WindowShouldClose()) {
+        EnableEventWaiting();
         BeginDrawing();
 
         int charKey = GetCharPressed();
@@ -101,6 +105,9 @@ void OpenFile(const char* path) {
                 SetWindowSize(WIDTH, HEIGHT);
             else 
                 ToggleFullscreen();
+        } else if(IsKeyPressed(F5)) {
+            printf("%s", path);
+            SaveFileText(path, buffer);
         }
 
         DrawBuffer(buffer, len, startX, startY);
@@ -110,12 +117,12 @@ void OpenFile(const char* path) {
     CloseWindow();
 }
 
-// Loads the buffer with text from file path and returns the new length of the buffer.
-static int LoadBuffer(const char* path, char* buf) {
+// Loads the buffer with text from fileBuffer and returns the new length of the local buffer.
+static int LoadBuffer(char* buf, char* fileBuffer) {
     int idx = 0;
 
-    while(path[idx] != '\0') {
-        buf[idx] = path[idx];
+    while(fileBuffer[idx] != '\0') {
+        buf[idx] = fileBuffer[idx];
         idx++;
     }
 
