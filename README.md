@@ -12,6 +12,6 @@ Run krow
 ```krow <file_to_open>```
 
 ## Shortcuts
-F11 - Fullscreen
-F5 - Save File 
+F11 - Fullscreen <br />
+F5 - Save File <br />
 ```Note this only works if you provided a file path argument when starting Krow.```
