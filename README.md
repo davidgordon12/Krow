@@ -1,5 +1,5 @@
 # Krow
-A graphical text-editor built on Raylib (OpenGL)
+A graphical text-editor built on Raylib. Only supports ASCII-based files.
 
 <img src="krow.png" />
 
