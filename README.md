@@ -4,7 +4,7 @@ A graphical text-editor built on Raylib. Only supports ASCII-based files.
 <img src="krow.png" />
 
 ## Build
-This project relies on Raylib. You can get it <a href="https://github.com/raysan5/raylib">here</a.>.
+This project relies on Raylib. You can get it <a href="https://github.com/raysan5/raylib">here</a>.
 
 Clone the repo and run the Makefile.
 
