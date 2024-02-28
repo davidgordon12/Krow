@@ -15,7 +15,8 @@ int main(int argc, char** argv) {
 
         FILE* file = fopen(filePath, "r+");
         if(file == NULL) {
-            fprintf(stderr, "Invalid file path");
+            fprintf(stdout, "Invalid file path\n");
+            return 1;
         }
 
         // Get the size of the file
@@ -24,22 +25,25 @@ int main(int argc, char** argv) {
         fseek(file, 0, SEEK_SET);
 
         if(fileSize > FILE_MAX) {
-            fprintf(stderr, "File too large. Must be less than 1024000 bytes");
+            fprintf(stdout, "File too large. Must be less than 1024000 bytes\n");
+            return 1;
         }
 
         char* fileBuffer = (char*)malloc(fileSize * sizeof(char));
         if(fileBuffer == NULL) {
-            fprintf(stderr, "Not enough memory to open file");
+            fprintf(stdout, "Not enough memory to open file\n");
+            return 1;
         }
 
         fread(fileBuffer, sizeof(char), fileSize, file);
 
-
         OpenFile(filePath, fileBuffer);
     } else {
-        fprintf(stderr, "Please provide a file path");
-        return 0;
+        fprintf(stdout, "Please provide a file path\n");
+        return 1;
     }
 
     const char* filePath = argv[1];
+
+    return 0;
 }

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 #include "raylib.h"
 #include "krow.h"
@@ -35,7 +36,6 @@ static void DrawBuffer(char* buf, int len, int startX, int startY);
 static void DrawCursor(char* buf, int x, int y);
 
 void OpenFile(const char* path, char* fileBuffer) {
-    fprintf(stderr, "%s", path);
     // On each key press, we will insert the char (if it is in range defined below)
     // into our buffer to be printed each frame.
     char buffer[FILE_MAX];
@@ -61,6 +61,11 @@ void OpenFile(const char* path, char* fileBuffer) {
 
         int charKey = GetCharPressed();
         int controlKey = GetKeyPressed();
+
+        if(controlKey == 17) {
+            fprintf(stderr, "HIIIIIII");
+        }
+
         Vector2 scroll = GetMouseWheelMoveV();
 
         // Controls window scrolling
@@ -105,8 +110,7 @@ void OpenFile(const char* path, char* fileBuffer) {
                 SetWindowSize(WIDTH, HEIGHT);
             else 
                 ToggleFullscreen();
-        } else if(IsKeyPressed(F5)) {
-            printf("%s", path);
+        } else if(IsKeyPressed(F5) && strlen(path) > 0) {
             SaveFileText(path, buffer);
         }
 
